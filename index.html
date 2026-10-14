@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rahula College | English Media Unit</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --accent: #ec4899;
+            --bg-gradient: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #090d16 100%);
+            --card-bg: rgba(255, 255, 255, 0.04);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: -1;
+            opacity: 0.18;
+        }
+        body::before {
+            top: -120px;
+            left: -120px;
+            background: var(--primary);
+        }
+        body::after {
+            bottom: -120px;
+            right: -120px;
+            background: var(--accent);
+        }
+
+        .view {
+            display: none;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .view.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Landing Page Styling */
+        .landing-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--card-border);
+            border-radius: 40px;
+            padding: 4.5rem 3rem;
+            text-align: center;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.15);
+            width: 100%;
+        }
+
+        .landing-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .landing-card h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #818cf8 0%, #f472b6 50%, #fb7185 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.02em;
+        }
+
+        .landing-card p {
+            color: var(--text-muted);
+            font-size: 1.15rem;
+            font-weight: 500;
+            margin-bottom: 2.5rem;
+        }
+
+        .enter-btn {
+            background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+            color: #fff;
+            border: none;
+            padding: 1.1rem 3.5rem;
+            font-size: 1.15rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 12px 35px rgba(99, 102, 241, 0.45);
+            transition: all 0.3s ease;
+            letter-spacing: 0.05em;
+        }
+
+        .enter-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 45px rgba(236, 72, 153, 0.6);
+        }
+
+        /* Dashboard Styling */
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        header h2 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #818cf8 0%, #f472b6 50%, #fb7185 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.3rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--card-border);
+            border-radius: 40px;
+            padding: 3.5rem 3rem;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.15);
+            position: relative;
+            width: 100%;
+        }
+
+        .card-badge {
+            position: absolute;
+            top: 2.2rem;
+            right: 2.2rem;
+            background: linear-gradient(135deg, var(--accent), #db2777);
+            color: #fff;
+            padding: 0.55rem 1.35rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            box-shadow: 0 8px 25px rgba(236, 72, 153, 0.45);
+            animation: bounce 2s infinite;
+        }
+
+        .card h3 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 0.3rem;
+            color: #fff;
+            letter-spacing: -0.02em;
+        }
+
+        .date-sub {
+            color: var(--text-muted);
+            font-size: 1.15rem;
+            margin-bottom: 2.5rem;
+            font-weight: 600;
+        }
+
+        .slot-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.4rem;
+        }
+
+        .slot-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 1.5rem 1.8rem;
+            border-radius: 22px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .slot-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 5px;
+            height: 0;
+            background: var(--primary);
+            border-radius: 0 4px 4px 0;
+            transition: height 0.3s ease;
+        }
+
+        .slot-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(129, 140, 248, 0.4);
+            transform: translateX(6px);
+        }
+
+        .slot-item:hover::before {
+            height: 65%;
+        }
+
+        .slot-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #818cf8;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .slot-names {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.4;
+        }
+
+        .slot-grade {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            font-weight: 600;
+            background: rgba(99, 102, 241, 0.25);
+            border: 1px solid rgba(99, 102, 241, 0.35);
+            padding: 0.25rem 0.75rem;
+            border-radius: 8px;
+            margin-left: 0.7rem;
+            display: inline-block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LANDING VIEW -->
+    <div id="landing-view" class="view active">
+        <div class="landing-card">
+            <div class="landing-icon">🎙️</div>
+            <h1>Rahula College</h1>
+            <p>English Media Unit • Live Broadcast Roster Portal</p>
+            <button class="enter-btn" onclick="enterDashboard()">Enter Portal ✨</button>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD VIEW -->
+    <div id="dashboard-view" class="view">
+        <div class="container" style="width: 100%;">
+            <header>
+                <h2>Rahula College</h2>
+                <p>English Media Unit • Live Broadcast Loop</p>
+            </header>
+
+            <div class="card">
+                <div class="card-badge">Next Upcoming Broadcast</div>
+                <h3 id="session-title">📅 Initializing...</h3>
+                <div class="date-sub" id="session-date">--</div>
+                <div class="slot-list" id="session-slots"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Special manual overrides for specific dates (format: "YYYY-MM-DD")
+        // If a date is added here, it will display these exact privileged students instead of the automated loop!
+        const manualOverrides = {
+            // "2026-10-16": {
+            //     dayType: "Friday",
+            //     slots: [
+            //         { title: "Quote of the Day", names: "Special Student A & Special Student B", gradeText: "Grade 6" },
+            //         { title: "Speciality of the Day", names: "Special Student C & Special Student D", gradeText: "Grade 8" },
+            //         { title: "Rahal News Programme", names: "Special Student E & Special Student F", gradeText: "Grade 10" }
+            //     ]
+            // }
+        };
+
+        const pool = {
+            g6_prog: ["M. Senula Lohas", "B.U. Lendu Denuwan", "Lasindu Denuwan", "H T Sawen Randull Yometh", "Newch Vilupa Rutasinghe", "Lathita Hasath Rathiniryaka", "Gesandu Nimsuka", "Sehas Dinharu Wijerathna", "H.K. Yahan Bas", "Erandi Kannangara", "Kaweesh Snehin Runage", "Rashil Nandinu Wickramasinghe de", "Desindu Ronal Amarasi Guna", "Sehinsa Chettuhas Kankanam Pathi", "Gan Hewage Mihuja Sasdimu Wickh", "EDIRISINHE ARACHCHIGE INDUN"],
+            g7_prog: ["P. A. Menupa Thinath Randira", "P.M. Ham Sandul", "Hesandu Sasith Godawelage", "P.G Masendu Sethruta", "K.A. Sanuth Nethmira Hettiarachvi", "Nehuja Damsa", "S.Sanuth Dumith Samarasingha", "A.G.A.T Nimaada", "Hithesina Nirmith Wickramaratne", "Ometh Cheriru Sedarshetti", "Induwara Udan"],
+            g8_prog: ["C.A Dhamsara Senarath Piyasi", "Tharul Damnada Gunasekara", "INAL SANISHTHA HEWAVIDANA", "Hasat Dinadith Perera", "Janiru Ninduwara Weragoda Arachchi", "Vidana Gamage Sinura Sasvidu", "KH. Chathum Dinethh", "Setath Abayasinghe", "Nirmitha Sesath De Silva"],
+            g9_prog: ["Dethura Mahisara Randonbage", "Dihein Sarvidu", "BK Sandil Sandira Scottyarachchi", "Sethindu Dissanayake", "Shanuka Seygan Adithya Bandara", "Sedul Dimara Kodithuwakku", "S.T.M Dissanayake", "Semuka Nethsanda Kodithuwakku", "A.G.Shashidu Ashish", "Damsara Neththikumara", "Hirat Randilu Wijesara Dissanay"],
+            g9_news: ["Vinuka Theshan Ranawaka", "Sethindu Dissanayake", "Shanuka Seygan Adithya Bandara", "Sedul Dimara Kodithuwakku", "S.T.M Dissanayake", "Semuka Nethsanda Kodithuwakku", "A.G.Shashidu Ashish", "Damsara Neththikumara", "Hirat Randilu Wijesara Dissanay"],
+            g10_all: ["Isija Anusara", "Yasiru Sithijaya Ranasinghe", "Disinu Chandul", "Junal Basnayake", "Buddhi Mahendra"]
+        };
+
+        function getPair(list, index) {
+            const idx1 = index % list.length;
+            let idx2 = (index + 1) % list.length;
+            if (list.length > 1 && idx1 === idx2) {
+                idx2 = (idx2 + 1) % list.length;
+            }
+            if (list.length < 2) return [list[0], list[0]];
+            return [list[idx1], list[idx2]];
+        }
+
+        function generateScheduleDays() {
+            let days = [];
+            let curr = new Date(2026, 9, 16, 7, 50, 0);
+            
+            for (let i = 0; i < 60; i++) {
+                let dayOfWeek = curr.getDay();
+                let year = curr.getFullYear();
+                let month = String(curr.getMonth() + 1).padStart(2, '0');
+                let day = String(curr.getDate()).padStart(2, '0');
+                let dateStr = `${year}-${month}-${day}`;
+                let formattedDate = curr.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' });
+                
+                if (dayOfWeek === 5) {
+                    days.push({
+                        dateKey: dateStr,
+                        displayDate: formattedDate,
+                        dayType: 'Friday',
+                        qotdGrade: (i % 2 === 0) ? 6 : 7,
+                        specGrade: (i % 2 === 0) ? 8 : 9,
+                        newsGrade: (i % 2 === 0) ? 10 : 9,
+                        loopIndex: Math.floor(i / 2)
+                    });
+                } else if (dayOfWeek === 3) {
+                    days.push({
+                        dateKey: dateStr,
+                        displayDate: formattedDate,
+                        dayType: 'Wednesday',
+                        qotdGrade: (i % 2 === 0) ? 6 : 7,
+                        specGrade: (i % 2 === 0) ? 8 : 9,
+                        songGrade: (i % 3 === 0) ? 8 : (i % 3 === 1) ? 9 : 10,
+                        loopIndex: Math.floor(i / 2)
+                    });
+                }
+                
+                if (dayOfWeek === 5) {
+                    curr.setDate(curr.getDate() + 5);
+                } else {
+                    curr.setDate(curr.getDate() + 2);
+                }
+            }
+            return days;
+        }
+
+        function resolveStudents(type, grade, index) {
+            let poolList = [];
+            if (type === 'qotd') {
+                if (grade === 6) poolList = pool.g6_prog;
+                if (grade === 7) poolList = pool.g7_prog;
+            } else if (type === 'spec') {
+                if (grade === 8) poolList = pool.g8_prog;
+                if (grade === 9) poolList = pool.g9_prog;
+            } else if (type === 'song') {
+                if (grade === 8) poolList = pool.g8_prog;
+                if (grade === 9) poolList = pool.g9_prog;
+                if (grade === 10) poolList = pool.g10_all;
+            } else if (type === 'news') {
+                if (grade === 9) poolList = pool.g9_news;
+                if (grade === 10) poolList = pool.g10_all;
+            }
+            if (!poolList || poolList.length === 0) poolList = pool.g10_all;
+            const pair = getPair(poolList, index);
+            return { names: `${pair[0]} & ${pair[1]}`, gradeText: `Grade ${grade}` };
+        }
+
+        function buildSessionContent(session) {
+            // Check if there is a manual privilege override for this exact date
+            if (manualOverrides[session.dateKey]) {
+                const override = manualOverrides[session.dateKey];
+                let html = '';
+                override.slots.forEach(slot => {
+                    html += `<div class="slot-item"><div class="slot-title">${slot.title}</div><div class="slot-names">${slot.names}<span class="slot-grade">${slot.gradeText}</span></div></div>`;
+                });
+                return html;
+            }
+
+            let html = '';
+            const idx = session.loopIndex;
+
+            if (session.dayType === 'Wednesday') {
+                let qotd = resolveStudents('qotd', session.qotdGrade, idx);
+                let spec = resolveStudents('spec', session.specGrade, idx);
+                let song = resolveStudents('song', session.songGrade, idx);
+
+                html += `<div class="slot-item"><div class="slot-title">Quote of the Day</div><div class="slot-names">${qotd.names}<span class="slot-grade">${qotd.gradeText}</span></div></div>`;
+                html += `<div class="slot-item"><div class="slot-title">Speciality of the Day</div><div class="slot-names">${spec.names}<span class="slot-grade">${spec.gradeText}</span></div></div>`;
+                html += `<div class="slot-item"><div class="slot-title">A Song for Your Life</div><div class="slot-names">${song.names}<span class="slot-grade">${song.gradeText}</span></div></div>`;
+            } else {
+                let qotd = resolveStudents('qotd', session.qotdGrade, idx);
+                let spec = resolveStudents('spec', session.specGrade, idx);
+                let news = resolveStudents('news', session.newsGrade, idx);
+
+                html += `<div class="slot-item"><div class="slot-title">Quote of the Day</div><div class="slot-names">${qotd.names}<span class="slot-grade">${qotd.gradeText}</span></div></div>`;
+                html += `<div class="slot-item"><div class="slot-title">Speciality of the Day</div><div class="slot-names">${spec.names}<span class="slot-grade">${spec.gradeText}</span></div></div>`;
+                html += `<div class="slot-item"><div class="slot-title">Rahal News Programme</div><div class="slot-names">${news.names}<span class="slot-grade">${news.gradeText}</span></div></div>`;
+            }
+            return html;
+        }
+
+        function updateDisplay() {
+            const schedule = generateScheduleDays();
+            const now = new Date();
+
+            let activeIndex = 0;
+            for (let i = 0; i < schedule.length; i++) {
+                let sessionDateStr = schedule[i].dateKey;
+                let cutoffTime = new Date(sessionDateStr + "T07:50:00");
+                let endOfDay = new Date(sessionDateStr + "T23:59:59");
+
+                if (now < cutoffTime) {
+                    activeIndex = i;
+                    break;
+                }
+                if (now >= cutoffTime && now <= endOfDay) {
+                    activeIndex = i + 1;
+                    break;
+                }
+                if (now > endOfDay) {
+                    activeIndex = i + 1;
+                }
+            }
+
+            if (activeIndex >= schedule.length) activeIndex = schedule.length - 1;
+
+            const targetSession = schedule[activeIndex];
+            const override = manualOverrides[targetSession.dateKey];
+            const displayDayType = override ? override.dayType : targetSession.dayType;
+
+            document.getElementById('session-title').innerHTML = `🌟 ${displayDayType} Broadcast`;
+            document.getElementById('session-date').innerText = targetSession.displayDate;
+            document.getElementById('session-slots').innerHTML = buildSessionContent(targetSession);
+        }
+
+        function enterDashboard() {
+            document.getElementById('landing-view').classList.remove('active');
+            document.getElementById('dashboard-view').classList.add('active');
+            updateDisplay();
+        }
+
+        updateDisplay();
+        setInterval(updateDisplay, 10000);
+    </script>
+</body>
+</html>
