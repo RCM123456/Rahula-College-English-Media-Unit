@@ -302,7 +302,6 @@
 
     <script>
         // Special manual overrides for specific dates (format: "YYYY-MM-DD")
-        // If a date is added here, it will display these exact privileged students instead of the automated loop!
         const manualOverrides = {
             // "2026-10-16": {
             //     dayType: "Friday",
@@ -317,7 +316,10 @@
         const pool = {
             g6_prog: ["M. Senula Lohas", "B.U. Lendu Denuwan", "Lasindu Denuwan", "H T Sawen Randull Yometh", "Newch Vilupa Rutasinghe", "Lathita Hasath Rathiniryaka", "Gesandu Nimsuka", "Sehas Dinharu Wijerathna", "H.K. Yahan Bas", "Erandi Kannangara", "Kaweesh Snehin Runage", "Rashil Nandinu Wickramasinghe de", "Desindu Ronal Amarasi Guna", "Sehinsa Chettuhas Kankanam Pathi", "Gan Hewage Mihuja Sasdimu Wickh", "EDIRISINHE ARACHCHIGE INDUN"],
             g7_prog: ["P. A. Menupa Thinath Randira", "P.M. Ham Sandul", "Hesandu Sasith Godawelage", "P.G Masendu Sethruta", "K.A. Sanuth Nethmira Hettiarachvi", "Nehuja Damsa", "S.Sanuth Dumith Samarasingha", "A.G.A.T Nimaada", "Hithesina Nirmith Wickramaratne", "Ometh Cheriru Sedarshetti", "Induwara Udan"],
-            g8_prog: ["C.A Dhamsara Senarath Piyasi", "Tharul Damnada Gunasekara", "INAL SANISHTHA HEWAVIDANA", "Hasat Dinadith Perera", "Janiru Ninduwara Weragoda Arachchi", "Vidana Gamage Sinura Sasvidu", "KH. Chathum Dinethh", "Setath Abayasinghe", "Nirmitha Sesath De Silva"],
+            
+            // C.A Dhamsara removed from Grade 8!
+            g8_prog: ["Tharul Damnada Gunasekara", "INAL SANISHTHA HEWAVIDANA", "Hasat Dinadith Perera", "Janiru Ninduwara Weragoda Arachchi", "Vidana Gamage Sinura Sasvidu", "KH. Chathum Dinethh", "Setath Abayasinghe", "Nirmitha Sesath De Silva"],
+            
             g9_prog: ["Dethura Mahisara Randonbage", "Dihein Sarvidu", "BK Sandil Sandira Scottyarachchi", "Sethindu Dissanayake", "Shanuka Seygan Adithya Bandara", "Sedul Dimara Kodithuwakku", "S.T.M Dissanayake", "Semuka Nethsanda Kodithuwakku", "A.G.Shashidu Ashish", "Damsara Neththikumara", "Hirat Randilu Wijesara Dissanay"],
             g9_news: ["Vinuka Theshan Ranawaka", "Sethindu Dissanayake", "Shanuka Seygan Adithya Bandara", "Sedul Dimara Kodithuwakku", "S.T.M Dissanayake", "Semuka Nethsanda Kodithuwakku", "A.G.Shashidu Ashish", "Damsara Neththikumara", "Hirat Randilu Wijesara Dissanay"],
             g10_all: ["Isija Anusara", "Yasiru Sithijaya Ranasinghe", "Disinu Chandul", "Junal Basnayake", "Buddhi Mahendra"]
@@ -398,7 +400,6 @@
         }
 
         function buildSessionContent(session) {
-            // Check if there is a manual privilege override for this exact date
             if (manualOverrides[session.dateKey]) {
                 const override = manualOverrides[session.dateKey];
                 let html = '';
