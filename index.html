@@ -332,11 +332,47 @@
             return [list[idx1], list[idx2]];
         }
 
+        function resolveAndAdvance(type, grade, counters) {
+            let poolKey = '';
+            if (type === 'qotd') {
+                poolKey = (grade === 6) ? 'g6_prog' : 'g7_prog';
+            } else if (type === 'spec') {
+                poolKey = (grade === 8) ? 'g8_prog' : 'g9_prog';
+            } else if (type === 'song') {
+                if (grade === 8) poolKey = 'g8_prog';
+                if (grade === 9) poolKey = 'g9_prog';
+                if (grade === 10) poolKey = 'g10_all';
+            } else if (type === 'news') {
+                if (grade === 9) poolKey = 'g9_news';
+                if (grade === 10) poolKey = 'g10_all';
+            }
+
+            let list = pool[poolKey] || pool.g10_all;
+            let currentIdx = counters[poolKey];
+
+            // Get pair for the current tracker position
+            const pair = getPair(list, currentIdx);
+
+            // Advance pool tracker by +1 for strict sequential fairness
+            counters[poolKey] = (currentIdx + 1) % list.length;
+
+            return { names: `${pair[0]} & ${pair[1]}`, gradeText: `Grade ${grade}` };
+        }
+
         function generateScheduleDays() {
             let days = [];
             let curr = new Date(2026, 9, 16, 7, 50, 0);
-            
-            // Loop extended to 150 sessions for over a year of smooth scheduling!
+
+            // Dedicated sequential counters for every individual pool
+            let counters = {
+                g6_prog: 0,
+                g7_prog: 0,
+                g8_prog: 0,
+                g9_prog: 0,
+                g9_news: 0,
+                g10_all: 0
+            };
+
             for (let i = 0; i < 150; i++) {
                 let dayOfWeek = curr.getDay();
                 let year = curr.getFullYear();
@@ -344,37 +380,47 @@
                 let day = String(curr.getDate()).padStart(2, '0');
                 let dateStr = `${year}-${month}-${day}`;
                 let formattedDate = curr.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' });
-                
-                let baseIdx = Math.floor(i / 2);
 
-                if (dayOfWeek === 5) {
+                if (dayOfWeek === 5) { // FRIDAY
+                    let qotdGrade = (i % 2 === 0) ? 6 : 7;
+                    let specGrade = (i % 2 === 0) ? 8 : 9;
+                    let newsGrade = (i % 2 === 0) ? 10 : 9;
+
+                    let qotdData = resolveAndAdvance('qotd', qotdGrade, counters);
+                    let specData = resolveAndAdvance('spec', specGrade, counters);
+                    let newsData = resolveAndAdvance('news', newsGrade, counters);
+
                     days.push({
                         dateKey: dateStr,
                         displayDate: formattedDate,
                         dayType: 'Friday',
-                        qotdGrade: (i % 2 === 0) ? 6 : 7,
-                        specGrade: (i % 2 === 0) ? 8 : 9,
-                        newsGrade: (i % 2 === 0) ? 10 : 9,
-                        // Unique index offsets prevent any duplicate students on the same day!
-                        qotdIdx: baseIdx,
-                        specIdx: baseIdx + 4,
-                        newsIdx: baseIdx + 8
+                        slots: [
+                            { title: "Quote of the Day", names: qotdData.names, gradeText: qotdData.gradeText },
+                            { title: "Speciality of the Day", names: specData.names, gradeText: specData.gradeText },
+                            { title: "Rahal News Programme", names: newsData.names, gradeText: newsData.gradeText }
+                        ]
                     });
-                } else if (dayOfWeek === 3) {
+                } else if (dayOfWeek === 3) { // WEDNESDAY
+                    let qotdGrade = (i % 2 === 0) ? 6 : 7;
+                    let specGrade = (i % 2 === 0) ? 8 : 9;
+                    let songGrade = (i % 3 === 0) ? 8 : (i % 3 === 1) ? 9 : 10;
+
+                    let qotdData = resolveAndAdvance('qotd', qotdGrade, counters);
+                    let specData = resolveAndAdvance('spec', specGrade, counters);
+                    let songData = resolveAndAdvance('song', songGrade, counters);
+
                     days.push({
                         dateKey: dateStr,
                         displayDate: formattedDate,
                         dayType: 'Wednesday',
-                        qotdGrade: (i % 2 === 0) ? 6 : 7,
-                        specGrade: (i % 2 === 0) ? 8 : 9,
-                        songGrade: (i % 3 === 0) ? 8 : (i % 3 === 1) ? 9 : 10,
-                        // Unique index offsets prevent any duplicate students on the same day!
-                        qotdIdx: baseIdx,
-                        specIdx: baseIdx + 4,
-                        songIdx: baseIdx + 8
+                        slots: [
+                            { title: "Quote of the Day", names: qotdData.names, gradeText: qotdData.gradeText },
+                            { title: "Speciality of the Day", names: specData.names, gradeText: specData.gradeText },
+                            { title: "A Song for Your Life", names: songData.names, gradeText: songData.gradeText }
+                        ]
                     });
                 }
-                
+
                 if (dayOfWeek === 5) {
                     curr.setDate(curr.getDate() + 5);
                 } else {
@@ -382,27 +428,6 @@
                 }
             }
             return days;
-        }
-
-        function resolveStudents(type, grade, index) {
-            let poolList = [];
-            if (type === 'qotd') {
-                if (grade === 6) poolList = pool.g6_prog;
-                if (grade === 7) poolList = pool.g7_prog;
-            } else if (type === 'spec') {
-                if (grade === 8) poolList = pool.g8_prog;
-                if (grade === 9) poolList = pool.g9_prog;
-            } else if (type === 'song') {
-                if (grade === 8) poolList = pool.g8_prog;
-                if (grade === 9) poolList = pool.g9_prog;
-                if (grade === 10) poolList = pool.g10_all;
-            } else if (type === 'news') {
-                if (grade === 9) poolList = pool.g9_news;
-                if (grade === 10) poolList = pool.g10_all;
-            }
-            if (!poolList || poolList.length === 0) poolList = pool.g10_all;
-            const pair = getPair(poolList, index);
-            return { names: `${pair[0]} & ${pair[1]}`, gradeText: `Grade ${grade}` };
         }
 
         function buildSessionContent(session) {
@@ -416,24 +441,9 @@
             }
 
             let html = '';
-
-            if (session.dayType === 'Wednesday') {
-                let qotd = resolveStudents('qotd', session.qotdGrade, session.qotdIdx);
-                let spec = resolveStudents('spec', session.specGrade, session.specIdx);
-                let song = resolveStudents('song', session.songGrade, session.songIdx);
-
-                html += `<div class="slot-item"><div class="slot-title">Quote of the Day</div><div class="slot-names">${qotd.names}<span class="slot-grade">${qotd.gradeText}</span></div></div>`;
-                html += `<div class="slot-item"><div class="slot-title">Speciality of the Day</div><div class="slot-names">${spec.names}<span class="slot-grade">${spec.gradeText}</span></div></div>`;
-                html += `<div class="slot-item"><div class="slot-title">A Song for Your Life</div><div class="slot-names">${song.names}<span class="slot-grade">${song.gradeText}</span></div></div>`;
-            } else {
-                let qotd = resolveStudents('qotd', session.qotdGrade, session.qotdIdx);
-                let spec = resolveStudents('spec', session.specGrade, session.specIdx);
-                let news = resolveStudents('news', session.newsGrade, session.newsIdx);
-
-                html += `<div class="slot-item"><div class="slot-title">Quote of the Day</div><div class="slot-names">${qotd.names}<span class="slot-grade">${qotd.gradeText}</span></div></div>`;
-                html += `<div class="slot-item"><div class="slot-title">Speciality of the Day</div><div class="slot-names">${spec.names}<span class="slot-grade">${spec.gradeText}</span></div></div>`;
-                html += `<div class="slot-item"><div class="slot-title">Rahal News Programme</div><div class="slot-names">${news.names}<span class="slot-grade">${news.gradeText}</span></div></div>`;
-            }
+            session.slots.forEach(slot => {
+                html += `<div class="slot-item"><div class="slot-title">${slot.title}</div><div class="slot-names">${slot.names}<span class="slot-grade">${slot.gradeText}</span></div></div>`;
+            });
             return html;
         }
 
