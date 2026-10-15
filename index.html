@@ -316,10 +316,7 @@
         const pool = {
             g6_prog: ["M. Senula Lohas", "B.U. Lendu Denuwan", "Lasindu Denuwan", "H T Sawen Randull Yometh", "Newch Vilupa Rutasinghe", "Lathita Hasath Rathiniryaka", "Gesandu Nimsuka", "Sehas Dinharu Wijerathna", "H.K. Yahan Bas", "Erandi Kannangara", "Kaweesh Snehin Runage", "Rashil Nandinu Wickramasinghe de", "Desindu Ronal Amarasi Guna", "Sehinsa Chettuhas Kankanam Pathi", "Gan Hewage Mihuja Sasdimu Wickh", "EDIRISINHE ARACHCHIGE INDUN"],
             g7_prog: ["P. A. Menupa Thinath Randira", "P.M. Ham Sandul", "Hesandu Sasith Godawelage", "P.G Masendu Sethruta", "K.A. Sanuth Nethmira Hettiarachvi", "Nehuja Damsa", "S.Sanuth Dumith Samarasingha", "A.G.A.T Nimaada", "Hithesina Nirmith Wickramaratne", "Ometh Cheriru Sedarshetti", "Induwara Udan"],
-            
-            // C.A Dhamsara removed from Grade 8!
             g8_prog: ["Tharul Damnada Gunasekara", "INAL SANISHTHA HEWAVIDANA", "Hasat Dinadith Perera", "Janiru Ninduwara Weragoda Arachchi", "Vidana Gamage Sinura Sasvidu", "KH. Chathum Dinethh", "Setath Abayasinghe", "Nirmitha Sesath De Silva"],
-            
             g9_prog: ["Dethura Mahisara Randonbage", "Dihein Sarvidu", "BK Sandil Sandira Scottyarachchi", "Sethindu Dissanayake", "Shanuka Seygan Adithya Bandara", "Sedul Dimara Kodithuwakku", "S.T.M Dissanayake", "Semuka Nethsanda Kodithuwakku", "A.G.Shashidu Ashish", "Damsara Neththikumara", "Hirat Randilu Wijesara Dissanay"],
             g9_news: ["Vinuka Theshan Ranawaka", "Sethindu Dissanayake", "Shanuka Seygan Adithya Bandara", "Sedul Dimara Kodithuwakku", "S.T.M Dissanayake", "Semuka Nethsanda Kodithuwakku", "A.G.Shashidu Ashish", "Damsara Neththikumara", "Hirat Randilu Wijesara Dissanay"],
             g10_all: ["Isija Anusara", "Yasiru Sithijaya Ranasinghe", "Disinu Chandul", "Junal Basnayake", "Buddhi Mahendra"]
@@ -339,7 +336,8 @@
             let days = [];
             let curr = new Date(2026, 9, 16, 7, 50, 0);
             
-            for (let i = 0; i < 60; i++) {
+            // Loop extended to 150 sessions for over a year of smooth scheduling!
+            for (let i = 0; i < 150; i++) {
                 let dayOfWeek = curr.getDay();
                 let year = curr.getFullYear();
                 let month = String(curr.getMonth() + 1).padStart(2, '0');
@@ -347,6 +345,8 @@
                 let dateStr = `${year}-${month}-${day}`;
                 let formattedDate = curr.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' });
                 
+                let baseIdx = Math.floor(i / 2);
+
                 if (dayOfWeek === 5) {
                     days.push({
                         dateKey: dateStr,
@@ -355,7 +355,10 @@
                         qotdGrade: (i % 2 === 0) ? 6 : 7,
                         specGrade: (i % 2 === 0) ? 8 : 9,
                         newsGrade: (i % 2 === 0) ? 10 : 9,
-                        loopIndex: Math.floor(i / 2)
+                        // Unique index offsets prevent any duplicate students on the same day!
+                        qotdIdx: baseIdx,
+                        specIdx: baseIdx + 4,
+                        newsIdx: baseIdx + 8
                     });
                 } else if (dayOfWeek === 3) {
                     days.push({
@@ -365,7 +368,10 @@
                         qotdGrade: (i % 2 === 0) ? 6 : 7,
                         specGrade: (i % 2 === 0) ? 8 : 9,
                         songGrade: (i % 3 === 0) ? 8 : (i % 3 === 1) ? 9 : 10,
-                        loopIndex: Math.floor(i / 2)
+                        // Unique index offsets prevent any duplicate students on the same day!
+                        qotdIdx: baseIdx,
+                        specIdx: baseIdx + 4,
+                        songIdx: baseIdx + 8
                     });
                 }
                 
@@ -410,20 +416,19 @@
             }
 
             let html = '';
-            const idx = session.loopIndex;
 
             if (session.dayType === 'Wednesday') {
-                let qotd = resolveStudents('qotd', session.qotdGrade, idx);
-                let spec = resolveStudents('spec', session.specGrade, idx);
-                let song = resolveStudents('song', session.songGrade, idx);
+                let qotd = resolveStudents('qotd', session.qotdGrade, session.qotdIdx);
+                let spec = resolveStudents('spec', session.specGrade, session.specIdx);
+                let song = resolveStudents('song', session.songGrade, session.songIdx);
 
                 html += `<div class="slot-item"><div class="slot-title">Quote of the Day</div><div class="slot-names">${qotd.names}<span class="slot-grade">${qotd.gradeText}</span></div></div>`;
                 html += `<div class="slot-item"><div class="slot-title">Speciality of the Day</div><div class="slot-names">${spec.names}<span class="slot-grade">${spec.gradeText}</span></div></div>`;
                 html += `<div class="slot-item"><div class="slot-title">A Song for Your Life</div><div class="slot-names">${song.names}<span class="slot-grade">${song.gradeText}</span></div></div>`;
             } else {
-                let qotd = resolveStudents('qotd', session.qotdGrade, idx);
-                let spec = resolveStudents('spec', session.specGrade, idx);
-                let news = resolveStudents('news', session.newsGrade, idx);
+                let qotd = resolveStudents('qotd', session.qotdGrade, session.qotdIdx);
+                let spec = resolveStudents('spec', session.specGrade, session.specIdx);
+                let news = resolveStudents('news', session.newsGrade, session.newsIdx);
 
                 html += `<div class="slot-item"><div class="slot-title">Quote of the Day</div><div class="slot-names">${qotd.names}<span class="slot-grade">${qotd.gradeText}</span></div></div>`;
                 html += `<div class="slot-item"><div class="slot-title">Speciality of the Day</div><div class="slot-names">${spec.names}<span class="slot-grade">${spec.gradeText}</span></div></div>`;
