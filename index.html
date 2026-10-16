@@ -350,10 +350,7 @@
             let list = pool[poolKey] || pool.g10_all;
             let currentIdx = counters[poolKey];
 
-            // Get pair for the current tracker position
             const pair = getPair(list, currentIdx);
-
-            // Advance pool tracker by +1 for strict sequential fairness
             counters[poolKey] = (currentIdx + 1) % list.length;
 
             return { names: `${pair[0]} & ${pair[1]}`, gradeText: `Grade ${grade}` };
@@ -363,7 +360,6 @@
             let days = [];
             let curr = new Date(2026, 9, 16, 7, 50, 0);
 
-            // ✅ Persistent counter object across ALL 150 sessions!
             let counters = {
                 g6_prog: 0,
                 g7_prog: 0,
@@ -406,8 +402,19 @@
                     let songGrade = (i % 3 === 0) ? 8 : (i % 3 === 1) ? 9 : 10;
 
                     let qotdData = resolveAndAdvance('qotd', qotdGrade, counters);
-                    let specData = resolveAndAdvance('spec', specGrade, counters);
-                    let songData = resolveAndAdvance('song', songGrade, counters);
+                    
+                    // Prevent same-day pool overlap if Speciality and Song both use Grade 9
+                    let specData, songData;
+                    if (specGrade === 9 && songGrade === 9) {
+                        specData = resolveAndAdvance('spec', specGrade, counters);
+                        let tempCounters = { ...counters };
+                        tempCounters['g9_prog'] = (counters['g9_prog'] + 1) % pool.g9_prog.length;
+                        songData = resolveAndAdvance('song', songGrade, tempCounters);
+                        counters['g9_prog'] = tempCounters['g9_prog'];
+                    } else {
+                        specData = resolveAndAdvance('spec', specGrade, counters);
+                        songData = resolveAndAdvance('song', songGrade, counters);
+                    }
 
                     days.push({
                         dateKey: dateStr,
