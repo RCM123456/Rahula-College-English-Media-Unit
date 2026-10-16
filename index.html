@@ -363,7 +363,7 @@
             let days = [];
             let curr = new Date(2026, 9, 16, 7, 50, 0);
 
-            // Dedicated sequential counters for every individual pool
+            // ✅ Persistent counter object across ALL 150 sessions!
             let counters = {
                 g6_prog: 0,
                 g7_prog: 0,
