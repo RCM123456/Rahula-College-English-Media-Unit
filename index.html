@@ -403,14 +403,12 @@
 
                     let qotdData = resolveAndAdvance('qotd', qotdGrade, counters);
                     
-                    // Prevent same-day pool overlap if Speciality and Song both use Grade 9
                     let specData, songData;
                     if (specGrade === 9 && songGrade === 9) {
                         specData = resolveAndAdvance('spec', specGrade, counters);
-                        let tempCounters = { ...counters };
-                        tempCounters['g9_prog'] = (counters['g9_prog'] + 1) % pool.g9_prog.length;
-                        songData = resolveAndAdvance('song', songGrade, tempCounters);
-                        counters['g9_prog'] = tempCounters['g9_prog'];
+                        // Skip one index so song doesn't share a student with speciality on the same day
+                        counters['g9_prog'] = (counters['g9_prog'] + 1) % pool.g9_prog.length;
+                        songData = resolveAndAdvance('song', songGrade, counters);
                     } else {
                         specData = resolveAndAdvance('spec', specGrade, counters);
                         songData = resolveAndAdvance('song', songGrade, counters);
